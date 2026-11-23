@@ -291,10 +291,14 @@ function runCheck({ id, command, args, cwd, timeoutMs, scope }) {
   };
 }
 
+// Disable repo-configured executables (fsmonitor, hooks) so auditing an untrusted repo cannot run code.
+const git = (root, ...args) =>
+  spawnSync('git', ['-c', 'core.fsmonitor=false', '-c', 'core.hooksPath=/dev/null', ...args], { cwd: root, encoding: 'utf8' });
+
 function gitEvidence(root) {
-  const branch = spawnSync('git', ['branch', '--show-current'], { cwd: root, encoding: 'utf8' });
-  const revision = spawnSync('git', ['rev-parse', '--short', 'HEAD'], { cwd: root, encoding: 'utf8' });
-  const status = spawnSync('git', ['status', '--short'], { cwd: root, encoding: 'utf8' });
+  const branch = git(root, 'branch', '--show-current');
+  const revision = git(root, 'rev-parse', '--short', 'HEAD');
+  const status = git(root, 'status', '--short');
   if (branch.status !== 0 || revision.status !== 0 || status.status !== 0) {
     return { available: false };
   }
