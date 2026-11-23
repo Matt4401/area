@@ -16,7 +16,7 @@ concurrency:
 jobs:
   push_to_mirror:
     name: Push to target repository
-    if: ${{ github.repository == 'Matt4401/Areanal' && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    if: ${{ github.repository == 'Matt4401/area' && github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
