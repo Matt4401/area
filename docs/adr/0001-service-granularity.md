@@ -73,10 +73,16 @@ Kubernetes supplies the broker and the databases as infrastructure. Their techno
 - **Data ownership**: each service owns its data. No service reads another service's tables. Cross-service consistency uses events and the **transactional outbox** pattern.
 - **Shared code**: a **monorepo** hosts every service, a shared connector SDK (the ENG-EXT node interface) and shared message contracts. CI builds and tests only affected services.
 
-### Data topology (staged)
+### Data topology: one database per service
 
-- **MVP**: one database instance, **one schema and one database role per service**, one connection string per service. Grants forbid cross-schema access.
-- **Final**: hot services (connectors, `engine`, `run-records`) move to **their own database instance** by changing their connection string only. This change will be recorded in an ADR that supersedes this section.
+Every stateful service gets **its own database instance** from the MVP onwards, with its own credentials, volume, migrations, backups and health check. Stateless services (`gateway`) have none.
+
+The reason is fault isolation. A database is one of the most likely components to fail (disk full, OOM kill, lost volume, slow query locking tables, failed migration). With a shared instance, any of these takes the whole product down. With one database per service, the outage is limited to the service that owns it. For example, if the `run-records` database is down, workflows still run and records are buffered by the broker. If one connector's database is down, only that connector stops.
+
+Alternatives considered for the data topology:
+
+- **One shared instance, one schema and role per service**: less to operate and a smaller footprint, but a single point of failure for every service and a shared performance bottleneck. Rejected on fault isolation.
+- **One shared database, shared tables**: rejected. It recreates a distributed monolith.
 
 ## Consequences
 
@@ -84,6 +90,8 @@ Kubernetes supplies the broker and the databases as infrastructure. Their techno
 
 - Each connector, the engine and the hook scheduler scale on their own metric (e.g. queue length), which serves driver 1.
 - A rate-limited or failing third-party API only backs up its own connector's queue. The API and other workflows stay responsive.
+- A database outage is limited to the service that owns it. There is no shared database whose failure stops everything.
+- Each database can be sized, tuned and scaled for its own service's load (driver 1 applies to storage too).
 - ENG-EXT is structural: a new connector is a new service built on the SDK, and it appears in `about.json` once it registers.
 - ENG-ASYNC and ENG-RETRY follow directly from the broker-based execution path. Worker restarts lose no work because messages are acknowledged after processing.
 - SYS-K8S is exercised for real: many deployments, replicas, ConfigMaps and Secrets.
@@ -94,8 +102,9 @@ Kubernetes supplies the broker and the databases as infrastructure. Their techno
 - **Distributed debugging**: a single workflow run spans 4+ services. Correlation IDs and tracing become mandatory, not optional.
 - **Eventual consistency**: e.g. disabling a workflow takes effect at the scheduler after an event, not instantly. Every such case must be documented.
 - **Contract drift**: message schemas between services need versioning and contract tests, in addition to the OpenAPI test.
-- **Resource footprint**: the local cluster used during the defense must fit all pods. This must be measured early.
-- **Staged data topology**: the MVP shares one instance, so independent scalability of storage is only partially delivered until the Final split.
+- **Resource footprint**: the local cluster used during the defense must fit all pods, including one database per stateful service. This must be measured early.
+- **More databases to operate**: one database per stateful service means N StatefulSets/volumes, N credentials, N migration pipelines, N backup jobs and N health checks (SYS-HEALTH reports each). This must be templated (shared Helm chart or Compose anchors), never hand-written N times.
+- **No cross-service transactions or joins**: every cross-service consistency rule goes through events and the outbox. Reports that combine data from several services must be built from events (e.g. in `run-records`), not queries.
 
 ### Risks and mitigations
 
@@ -113,8 +122,9 @@ The decision holds only if the following are observed. Otherwise it is revised (
 1. **Load test**: inject a burst of trigger events for one connector. Dashboards must show that **only** that connector (and the engine, if relevant) scales out via queue-length autoscaling, while API latency stays flat.
 2. **Fault injection**: make one third-party API return 503 or time out. Other workflows keep running, and failed jobs land in the dead-letter store and can be replayed.
 3. **Pod deletion**: delete a `gateway`, `engine` and connector pod during a run. No run is lost or duplicated.
-4. **Extensibility**: add a connector following `HOWTOCONTRIBUTE.md` without touching any other service, and observe it in `about.json`.
-5. **Footprint**: the full stack runs on the defense cluster and under Docker Compose on a team laptop.
+4. **Database failure**: stop one service's database (e.g. a connector's or `run-records`'). Only that service reports unhealthy. Other workflows keep running, and the affected service recovers without losing messages once its database is back.
+5. **Extensibility**: add a connector following `HOWTOCONTRIBUTE.md` without touching any other service, and observe it in `about.json`.
+6. **Footprint**: the full stack (including every service's database) runs on the defense cluster and under Docker Compose on a team laptop.
 
 ## Pros and cons of the options
 
@@ -146,5 +156,5 @@ The decision holds only if the following are observed. Otherwise it is revised (
 
 ## More information
 
-- Follow-up ADRs: broker choice, database engine, back-end framework, workflow engine model and failure semantics, data topology split at the Final (supersedes the MVP topology above).
+- Follow-up ADRs: broker choice, database engine, back-end framework, workflow engine model and failure semantics.
 - Subject requirements: `CLAUDE.md` (common base, additional features catalogue).
