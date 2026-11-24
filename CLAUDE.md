@@ -138,12 +138,3 @@ Security must be demonstrated, not described. Keep a short evidence note per SEC
 5. **Protection**: mechanism and where it lives in the code.
 6. **Verification**: replay against the protected product; the result must be distinguishable from a never-executed scenario.
 7. **Limits**: what is not covered, assumptions, residual risks.
-
-## Working rules for agents
-
-- Never write code for the sake of it: every feature must serve a real user need.
-- Never commit secrets, tokens or personal data.
-- Keep the OpenAPI description in sync with every endpoint change.
-- Keep the service discovery endpoint as the single source of the catalogue.
-- Any document claim must be demonstrable live; do not write claims the code cannot back.
-- Record significant technical choices as ADRs rather than in this file.
