@@ -96,6 +96,8 @@ A database is one of the components most likely to fail (full disk, crash, faile
 
 Rejected alternative: one shared instance with a schema per service. It is cheaper to run, but it is a single point of failure.
 
+> **Amended by [ADR-0004](0004-persistence.md):** each service keeps its own database and role, but for the MVP they share **one PostgreSQL instance**. A failure inside one database (bad migration, locks) stays contained; a failure of the instance does not. Splitting a service onto its own instance is a configuration change.
+
 ## Consequences
 
 **Good**
@@ -118,7 +120,7 @@ The decision holds only if all of these pass. Otherwise, fall back to miniservic
 
 - [ ] **Load test**: a burst on one connector scales **only** that connector. API latency stays flat.
 - [ ] **API failure**: a third-party API returns 503. Other workflows keep running, and failed jobs land in the dead-letter queue and can be replayed.
-- [ ] **Database failure**: stop one service's database. Only that service is unhealthy, and it recovers without losing messages.
+- [ ] **Database failure**: break one service's database (e.g. failed migration). Only that service is unhealthy, and it recovers without losing messages. Instance-level failure is covered by [ADR-0004](0004-persistence.md).
 - [ ] **Pod deletion**: delete pods during a run. No run is lost or duplicated.
 - [ ] **Extensibility**: add a connector via `HOWTOCONTRIBUTE.md` without touching other services.
 - [ ] **Footprint**: the full stack runs on the demo cluster and with Docker Compose.
