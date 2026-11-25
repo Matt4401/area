@@ -10,7 +10,7 @@ AREA is an automation platform inspired by IFTTT and Zapier. Users subscribe to 
 
 ## Architecture constraint already decided
 
-- The product is built as **microservices** deployed on **Kubernetes**.
+- The product is built as **microservices** deployed on **Kubernetes** (one service per connector; see [ADR-0001](docs/adr/0001-service-granularity.md), status: proposed).
 - Everything else (languages, frameworks, database, broker, etc.) is open and will be recorded as ADRs. Do not assume a stack that is not in the code or an ADR.
 
 ## Common base (every group delivers it)
