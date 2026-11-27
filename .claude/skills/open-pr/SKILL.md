@@ -5,7 +5,7 @@ description: Opens or updates a GitHub pull request following this repo's conven
 
 # Open a PR
 
-Every PR in this repo follows the same convention. Use the `gh` CLI for everything (never the GitHub MCP tools). Do the steps in order. Only the reviewer choice and ambiguous issue matches need the user; everything else is automatic and the PR is created without a final confirmation.
+Every PR in this repo follows the same convention. Use the `gh` CLI for everything (never the GitHub MCP tools). Do the steps in order. Only the draft/normal choice, the reviewer choice and ambiguous issue matches need the user; everything else is automatic and the PR is created without a final confirmation.
 
 ## 1. Preconditions
 
@@ -43,7 +43,7 @@ Every PR in this repo follows the same convention. Use the `gh` CLI for everythi
   - Changes: notable changes, one bullet each.
   - Test plan: what was actually run or checked. Do not claim tests that were not run.
   - Related issues: filled in step 5.
-- Not a draft: open it ready for review.
+- Draft or ready: the default is **draft**. Ask with `AskUserQuestion` (single select) whether to open it as a draft or as a normal PR. Options: "Draft (Recommended)" (description: "Open as a draft, mark ready for review later with `gh pr ready`") and "Normal PR" (description: "Open ready for review right away"). Pass `--draft` to `gh pr create` only when the user picks draft. Ask this in the same `AskUserQuestion` call as the reviewer question (step 6) when possible. Skip it when updating an existing PR (option 1 in step 1), where the draft state is left as is.
 - If the changes touch a security feature (anything labelled `security`, or a `SEC-*` item from CLAUDE.md), append a `## Security evidence` section with the 7 points from CLAUDE.md: Feature, Attack scenario, Reproduction, Observed evidence, Protection, Verification, Limits. Only fill points you can support from the diff; write `TODO` for the rest and say so in your final report.
 
 ## 3. Assignee
@@ -101,10 +101,11 @@ gh pr create \
   --body-file <tmp body file> \
   --assignee @me \
   --label "<label1>" --label "<label2>" \
-  --reviewer "<login1>,<login2>"
+  --reviewer "<login1>,<login2>" \
+  --draft
 ```
 
-Write the body to a temp file (scratchpad), not inline. Omit `--label` / `--reviewer` when empty. **Never pass `--project` or `--milestone`.**
+Write the body to a temp file (scratchpad), not inline. Omit `--label` / `--reviewer` when empty, and `--draft` when the user chose a normal PR. **Never pass `--project` or `--milestone`.**
 
 For an existing PR use `gh pr edit <n>` with `--add-assignee @me --add-label ... --add-reviewer ...` and `--body-file`/`--title` if they changed.
 
@@ -122,4 +123,4 @@ gh pr view <n> --json projectItems,milestone
 
 ## 9. Report
 
-Reply with: the PR URL, the title, assignee, labels, requested reviewers, linked issues, and the outcome of the project/milestone check. Mention anything left as `TODO`.
+Reply with: the PR URL, the title, draft or ready state, assignee, labels, requested reviewers, linked issues, and the outcome of the project/milestone check. Mention anything left as `TODO`.
