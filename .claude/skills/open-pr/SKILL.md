@@ -19,7 +19,21 @@ Every PR in this repo follows the same convention. Use the `gh` CLI for everythi
 - `git log origin/main..HEAD` is empty and there is nothing uncommitted: **stop** with a clear message, there is nothing to open a PR for.
 - On a non-main branch with uncommitted changes: mention them, do not commit them unless the user asked to. When you do commit (any branch), use a commit skill as described above.
 - Branch has no upstream, or is behind its local commits: run `git push -u origin HEAD` automatically.
-- A PR already exists for the branch (`gh pr view --json number,url 2>/dev/null`): do **not** create a duplicate. Report its URL and apply steps 4-7 to the existing PR with `gh pr edit` instead.
+- A PR already exists for the branch (`gh pr view --json number,url,state 2>/dev/null`, open state only): never create a duplicate silently. Ask with `AskUserQuestion` (single select) which of the options below to follow, then apply it. Options are listed in logical order, from least to most structural. Put "(Recommended)" on the one that best fits the context in which the skill was invoked, and say why in its description.
+
+  1. **Update the existing PR**: commit pending changes (through a commit skill), `git push`, then refresh title/body (step 2) and metadata with `gh pr edit` (steps 3-7 as edit). No new branch.
+  2. **Create a new PR on this one**: create a new branch from the current branch (same naming rule as above), commit and push there, then open a PR whose `--base` is the **current branch** (not `main`). Diff and commit range for the body are taken against that base (`git diff <base>...HEAD`, `git log <base>..HEAD`).
+  3. **Stack a new PR on this one**: same as option 2, but use `gh stack` to create and manage the stacked PR. Check `gh stack --help` first; if the extension is not installed, say so and offer option 2 instead.
+  4. **Create a new PR**: create a new branch from the current branch, commit and push there, then open a PR with `--base main`. The body's diff and range are taken against `origin/main`; mention in the body if it contains commits from the other PR.
+
+  How to pick the recommended option:
+  - Uncommitted changes or new commits that belong to the same purpose as the existing PR (a fix, a review follow-up, a forgotten file), or the user said "update", "push", "fix the PR": **1**.
+  - New work that depends on the existing PR's code and is a separate reviewable unit, and the existing PR is still unmerged: **3** if `gh stack` is available, otherwise **2**.
+  - New work that depends on the existing PR but a stack is overkill (small, not worth a tool): **2**.
+  - New work unrelated to the existing PR's code, or the existing PR is about to be merged: **4**.
+  - If the context does not point clearly to one, recommend **1** when there are changes tied to the PR's topic, otherwise **4**.
+
+  Steps 4-8 then apply to whichever PR results. In step 7, replace `--base main` with the chosen base.
 
 ## 2. Title and body
 
@@ -82,7 +96,7 @@ gh issue list --state open --limit 100 --json number,title,labels,body
 
 ```bash
 gh pr create \
-  --base main \
+  --base <base, main by default> \
   --title "<title>" \
   --body-file <tmp body file> \
   --assignee @me \
