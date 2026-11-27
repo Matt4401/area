@@ -130,4 +130,4 @@ The decision holds only if all of these pass. Otherwise, fall back to miniservic
 ## Related
 
 - Next ADRs: broker, database engine, back-end framework, workflow engine.
-- Requirements: [CLAUDE.md](../../CLAUDE.md).
+- Requirements: [CLAUDE.md](https://github.com/Matt4401/area/blob/main/CLAUDE.md).

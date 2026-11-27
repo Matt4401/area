@@ -142,4 +142,4 @@ The decision holds only if all of these pass in a PoC. Otherwise, revisit (React
 - [ADR-0001: Service granularity](0001-service-granularity.md), [ADR-0002: Back-end framework](0002-backend-framework.md).
 - Team vote: Notion, AREA › Architecture › Ranking.
 - Next ADRs: Android client (Jetpack Compose), accessibility audit tooling.
-- Requirements: [CLAUDE.md](../../CLAUDE.md).
+- Requirements: [CLAUDE.md](https://github.com/Matt4401/area/blob/main/CLAUDE.md).
