@@ -131,6 +131,14 @@ ADRs capture the reasoning behind significant technical decisions so future huma
 
 Before creating an ADR, inspect the repository for existing ADRs or config (e.g., `.adr-dir`, `docs/adr/`, `docs/decisions/`). Match the existing directory, numbering scheme (`0004-title.md` vs. `ADR-004-Title.rst`), and heading structure. Only use the default layout below when no convention exists.
 
+**This repo (AREA):** docs are a VitePress site in `apps/docs` (pnpm workspace). Pages live in `apps/docs/src/` (`srcDir`), ADRs in `apps/docs/src/adr/NNNN-slug.md`.
+
+- Create an ADR with `pnpm docs:new-adr "Title"` (template: `apps/docs/templates/adr.md`), never by hand-numbering.
+- Frontmatter is required: `status`, `date`, `decision-makers`, `supersedes`, `superseded-by`. The H1 is `# ADR-NNNN: Title`. The sidebar and `/adr/` index are generated from these, so no manual index edit.
+- Links between pages are relative and must resolve inside `apps/docs/src` (dead links fail `pnpm docs:build`). Link repo files outside it (e.g. `CLAUDE.md`) with a GitHub URL.
+- Wrap `{{ }}` in inline code or a fence: bare, Vue evaluates it. Mermaid fences are supported.
+- Verify with `pnpm docs:build`.
+
 ### Default ADR Template (`docs/decisions/ADR-001-title.md`)
 
 ```markdown
