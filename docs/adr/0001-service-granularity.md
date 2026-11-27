@@ -79,6 +79,8 @@ Solid arrows: HTTP or broker messages. Dotted arrows: synchronous internal calls
 | `run-records`      | Single store of execution records (SYS-OBS)                          |
 | `connector-<name>` | One per third-party service: polls, deduplicates, executes reactions |
 
+> **Rollout amended by [ADR-0006](0006-mvp-service-split.md):** for the MVP, all services except connectors run as modules of one `core` service, then are extracted when needed.
+
 ### Rules
 
 | Topic         | Rule                                                                                                                                         |

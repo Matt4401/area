@@ -134,5 +134,5 @@ The ORM / query layer is a separate decision (next ADR).
 - [ADR-0001: Service granularity](0001-service-granularity.md). This ADR amends its "one database per service" rule: databases stay separate, but share one instance for now.
 - [ADR-0002: Back-end framework](0002-backend-framework.md).
 - Team notes: Notion, AREA › Architecture.
-- Next ADRs: ORM / query layer, broker.
+- Next ADRs: ADR-0005 ORM / query layer, broker.
 - Requirements: [CLAUDE.md](../../CLAUDE.md).
