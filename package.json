@@ -1,0 +1,14 @@
+  {
+  "name": "area",
+  "private": true,
+  "packageManager": "pnpm@12.23.0",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "docs:dev": "pnpm --filter @area/docs dev",
+    "docs:build": "pnpm --filter @area/docs build",
+    "docs:preview": "pnpm --filter @area/docs preview",
+    "docs:new-adr": "pnpm --filter @area/docs new-adr"
+  }
+}

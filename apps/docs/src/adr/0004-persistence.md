@@ -135,4 +135,4 @@ The ORM / query layer is a separate decision (next ADR).
 - [ADR-0002: Back-end framework](0002-backend-framework.md).
 - Team notes: Notion, AREA › Architecture.
 - Next ADRs: ADR-0005 ORM / query layer, broker.
-- Requirements: [CLAUDE.md](../../CLAUDE.md).
+- Requirements: [CLAUDE.md](https://github.com/Matt4401/area/blob/main/CLAUDE.md).

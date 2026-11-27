@@ -125,4 +125,4 @@ The decision holds only if all of these pass in a PoC. Otherwise, revisit (Hono 
 - [ADR-0001: Service granularity](0001-service-granularity.md).
 - Spikes and team ranking: Notion, AREA › Architecture › Ranking.
 - Next ADRs: broker, database engine (PostgreSQL is the candidate), ORM, workflow engine, web front-end (Vue 3), Android (Jetpack Compose).
-- Requirements: [CLAUDE.md](../../CLAUDE.md).
+- Requirements: [CLAUDE.md](https://github.com/Matt4401/area/blob/main/CLAUDE.md).

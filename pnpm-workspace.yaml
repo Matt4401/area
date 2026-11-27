@@ -1,0 +1,7 @@
+packages:
+  - apps/*
+  - packages/*
+minimumReleaseAgeExclude:
+  - mermaid@12.4.0
+allowBuilds:
+  esbuild: true
