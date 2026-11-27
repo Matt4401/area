@@ -75,8 +75,8 @@ gh issue list --state open --limit 100 --json number,title,labels,body
 
 1. Candidates: `gh api repos/{owner}/{repo}/collaborators --jq '.[].login'`, excluding the PR author.
 2. Rank by recent activity on the files this PR touches (`git log --format='%an <%ae>' -- <changed files>` and blame), mapped to GitHub logins. When a login cannot be mapped, fall back to collaborator order.
-3. Ask with `AskUserQuestion` (multiSelect, up to 4 options, best-ranked first, each with a short reason such as "last touched docs/adr"). The user picks who to request.
-4. Request exactly the chosen people with `--reviewer`. If the user picks none, request none. If there are no candidates, skip this step.
+3. Ask with `AskUserQuestion` (multiSelect, up to 4 options). The **first option is always "All"** (description: "Request every collaborator except the author"). The remaining options are the best-ranked individuals, each with a short reason such as "last touched docs/adr". The user picks who to request.
+4. If the user picks "All", request every human collaborator from step 1 (author excluded, bots excluded), whatever else is selected. Otherwise request exactly the chosen people with `--reviewer`. If the user picks none, request none. If there are no candidates, skip this step.
 
 ## 7. Create
 
