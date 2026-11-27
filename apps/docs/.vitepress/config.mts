@@ -2,18 +2,20 @@ import { defineConfig } from 'vitepress'
 import { withMermaid } from 'vitepress-plugin-mermaid'
 import { readAdrs } from './adr'
 
+const base = '/area/'
+
 export default withMermaid(
   defineConfig({
     title: 'AREA Developer Docs',
     description: 'Architecture decisions and technical documentation for the AREA project.',
     lang: 'en',
-    base: '/area/',
+    base,
     srcDir: 'src',
     cleanUrls: true,
     lastUpdated: true,
     // Dead internal links fail the build (VitePress default); never opt out.
     ignoreDeadLinks: false,
-    head: [['link', { rel: 'icon', href: '/area/favicon.svg' }]],
+    head: [['link', { rel: 'icon', href: `${base}favicon.svg` }]],
     themeConfig: {
       logo: '/favicon.svg',
       search: { provider: 'local' },
